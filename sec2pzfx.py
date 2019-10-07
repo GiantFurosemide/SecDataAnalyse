@@ -9001,7 +9001,7 @@ def onestep_norm_peak2zero(filepath:str,x_interval:tuple=(2.0,5.0)):
     return fi
 
 # package pandas_toolkit.mytoolkit.py end
-def make_csv_summary(rootDir:str):
+def make_csv_summary(rootDir:str，x_interval: tuple = (2.5, 5.5)):
     resultname1 = os.path.basename(rootDir).split('.')[0] + '_all'  # default use rootDir name+ _all
     save2Dir1 = os.path.join(rootDir, resultname1)
 
@@ -9009,7 +9009,7 @@ def make_csv_summary(rootDir:str):
     save2Dir2 = os.path.join(rootDir, resultname2)
 
     mydata1 = SecDataSet(rootDir, x_interval=(-1.0, 15.0)).get_results()
-    mydata2 = mydata1.where((mydata1["time/min"] < 5.5) & (mydata1["time/min"] > 2.5))
+    mydata2 = mydata1.where((mydata1["time/min"] <= x_interval[1]) & (mydata1["time/min"] >= x_interval[0]))
     with open(save2Dir1 + '.csv', 'w') as fi:
         mydata1.to_csv(path_or_buf=fi, index=False)
     with open(save2Dir2 + '.csv', 'w') as fi:
@@ -9019,7 +9019,7 @@ def make_csv_summary(rootDir:str):
 # make concentrated csv summary file end
 
 # load files
-def prepare_file():
+def prepare_file(x_interval: tuple = (2.5, 5.5)):
     'use when only one csv and one pzfx in rootDir'
 
     # find csv file in rootdir
@@ -9028,7 +9028,7 @@ def prepare_file():
     print('>>>' + rootdir)
 
     if os.path.isdir(rootdir):
-        make_csv_summary(rootdir)
+        make_csv_summary(rootdir，x_interval)
         with open(os.path.join(rootdir,"results.pzfx"),'w') as fi:
             fi.write(SEC_TEMPLATE_PZFX)
         try:
@@ -9218,7 +9218,7 @@ class SecDataSet:
 
 if __name__ == '__main__':
     # load files
-    df,tree,root,rootdir=prepare_file()
+    df,tree,root,rootdir=prepare_file(x_interval=(2.5,5.5))
     # load files end
     
     # build all Column element
